@@ -1,0 +1,481 @@
+1)
+create table EMPLOYEE(
+    EmpNo number(10) primary key,
+    EmpName varchar(10) not null,
+    Gender varchar(1) not null CHECK (Gender='M' or Gender='F'),
+    Salary number(10) not null,
+    Address varchar(10) not null );
+
+DESC EMPLOYEE
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ EMPNO                                     NOT NULL NUMBER(10)
+ EMPNAME                                   NOT NULL VARCHAR2(10)
+ GENDER                                    NOT NULL VARCHAR2(1)
+ SALARY                                    NOT NULL NUMBER(10)
+ ADDRESS                                   NOT NULL VARCHAR2(10)
+
+2)
+
+ create table Department(
+  2  DeptNo number(10) primary key,
+  3  DeptName varchar(10) unique);
+
+
+ desc department
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ DEPTNO                                    NOT NULL NUMBER(10)
+ DEPTNAME                                           VARCHAR2(10)
+
+3)
+
+ ALTER TABLE EMPLOYEE
+  2  ADD DNo number(10);
+
+ ALTER TABLE EMPLOYEE
+  2  ADD FOREIGN KEY (DNo) REFERENCES Department (DeptNo);
+
+4)
+
+ insert into Department values(100, 'CSE');
+ insert into EMPLOYEE values(32,'Himanshu','M',4000000,'Manipal', 100);
+
+5)
+
+ insert into Department values(200,'IT');
+ insert into EMPLOYEE values(32,'Harsh','M',3000000,'Manipal',300);
+
+ insert into EMPLOYEE values(32,'Harsh','M',3000000,'Manipal',300)
+ *
+ ERROR at line 1:
+ ORA-00001: unique constraint (F01.SYS_C0016208) violated
+
+6)
+
+ delete from Department where DeptNo=100;
+
+delete from Department where DeptNo=100
+*
+ERROR at line 1:
+ORA-02292: integrity constraint (F01.SYS_C0016331) violated - child record
+found
+
+7)
+ alter table employee drop (DNo);
+
+ ALTER TABLE EMPLOYEE
+  2  ADD DNo number(10);
+
+ ALTER TABLE EMPLOYEE ADD CONSTRAINT fk_dno FOREIGN KEY(DNo) REFERENCES Department (DeptNo) ON DELETE CASCADE;
+
+Table altered
+
+8)
+ ALTER TABLE EMPLOYEE
+  2  MODIFY(salary DEFAULT 10000);
+
+Table altered.
+
+
+
+ DROP TABLE EMPLOYEE;
+ 
+Table dropped.
+
+ DROP TABLE DEPARTMENT;
+
+Table dropped.
+
+
+ADDING UNIVERSITY.SQL
+---------------------------------------------------------------
+ @C:\Users\student\Downloads/University.sql
+drop table prereq
+           *
+ERROR at line 1:
+ORA-00942: table or view does not exist
+
+
+drop table time_slot
+           *
+ERROR at line 1:
+ORA-00942: table or view does not exist
+
+
+drop table advisor
+           *
+ERROR at line 1:
+ORA-00942: table or view does not exist
+
+
+drop table takes
+           *
+ERROR at line 1:
+ORA-00942: table or view does not exist
+
+
+
+Table dropped.
+
+drop table teaches
+           *
+ERROR at line 1:
+ORA-00942: table or view does not exist
+
+
+drop table section
+           *
+ERROR at line 1:
+ORA-00942: table or view does not exist
+
+
+drop table instructor
+           *
+ERROR at line 1:
+ORA-00942: table or view does not exist
+
+
+drop table course
+           *
+ERROR at line 1:
+ORA-00942: table or view does not exist
+
+
+drop table department
+           *
+ERROR at line 1:
+ORA-00942: table or view does not exist
+
+
+drop table classroom
+           *
+ERROR at line 1:
+ORA-00942: table or view does not exist
+
+
+
+Table created.
+
+
+Table created.
+
+
+Table created.
+
+
+Table created.
+
+
+Table created.
+
+
+Table created.
+
+
+Table created.
+
+
+Table created.
+
+
+Table created.
+
+
+Table created.
+
+
+Table created.
+
+------------------------------------------------------------------
+ADDING smallRelations.sql
+------------------------------------------------------------------
+
+9)
+ select name,dept_name from student;
+
+NAME                 DEPT_NAME
+-------------------- --------------------
+Zhang                Comp. Sci.
+Shankar              Comp. Sci.
+Brandt               History
+Chavez               Finance
+Peltier              Physics
+Levy                 Physics
+Williams             Comp. Sci.
+Sanchez              Music
+Snow                 Physics
+Brown                Comp. Sci.
+Aoi                  Elec. Eng.
+
+NAME                 DEPT_NAME
+-------------------- --------------------
+Bourikas             Elec. Eng.
+Tanaka               Biology
+
+13 rows selected.
+
+
+
+10)  select * from instructor where dept_name = 'Comp. Sci.';
+
+ID    NAME                 DEPT_NAME                SALARY
+----- -------------------- -------------------- ----------
+10101 Srinivasan           Comp. Sci.                65000
+45565 Katz                 Comp. Sci.                75000
+83821 Brandt               Comp. Sci.                92000
+
+
+11)
+
+ select * from course where dept_name = 'Comp. Sci.' and credits = 3;
+
+COURSE_I TITLE                                              DEPT_NAME
+-------- -------------------------------------------------- --------------------
+   CREDITS
+----------
+CS-315   Robotics                                           Comp. Sci.
+         3
+
+CS-319   Image Processing                                   Comp. Sci.
+         3
+
+CS-347   Database System Concepts                           Comp. Sci.
+         3
+
+
+13)
+
+SQL> select salary from instructor WHERE salary BETWEEN 40000 AND 90000;
+
+    SALARY
+----------
+     65000
+     90000
+     40000
+     60000
+     87000
+     75000
+     62000
+     80000
+     72000
+     80000
+
+10 rows selected.
+
+
+
+
+18)
+ SELECT * FROM instructor WHERE dept_name LIKE '%ch%';
+
+no rows selected
+
+19)
+
+ SELECT name, length(name) FROM STUDENT;
+
+NAME                 LENGTH(NAME)
+-------------------- ------------
+Zhang                           5
+Shankar                         7
+Brandt                          6
+Chavez                          6
+Peltier                         7
+Levy                            4
+Williams                        8
+Sanchez                         7
+Snow                            4
+Brown                           5
+Aoi                             3
+
+NAME                 LENGTH(NAME)
+-------------------- ------------
+Bourikas                        8
+Tanaka                          6
+
+13 rows selected.
+
+
+20)
+
+ select substr(dept_name,3,3) from department;
+
+SUBSTR(DEPT_
+------------
+olo
+mp.
+ec.
+nan
+sto
+sic
+ysi
+
+7 rows selected.
+
+
+21)
+
+ SELECT UPPER (name) FROM instructor;
+
+UPPER(NAME)
+--------------------
+SRINIVASAN
+WU
+MOZART
+EINSTEIN
+EL SAID
+GOLD
+KATZ
+CALIFIERI
+SINGH
+CRICK
+BRANDT
+
+UPPER(NAME)
+--------------------
+KIM
+
+12 rows selected.
+
+
+22)
+
+  select nvl(id, 0) from student;
+
+NVL(I
+-----
+00128
+12345
+19991
+23121
+44553
+45678
+54321
+55739
+70557
+76543
+76653
+
+NVL(I
+-----
+98765
+98988
+
+13 rows selected.
+
+
+
+23)
+
+  select salary, round(salary/3, 100) from instructor;
+
+    SALARY ROUND(SALARY/3,100)
+---------- -------------------
+     65000          21666.6667
+     90000               30000
+     40000          13333.3333
+     95000          31666.6667
+     60000               20000
+     87000               29000
+     75000               25000
+     62000          20666.6667
+     80000          26666.6667
+     72000               24000
+     92000          30666.6667
+
+    SALARY ROUND(SALARY/3,100)
+---------- -------------------
+     80000          26666.6667
+
+12 rows selected.
+==============================================================================
+
+
+				Adding Tables for rest
+			       ========================
+
+
+ create table EMPLOYEE(
+  2      EmpNo number(10) primary key,
+  3      EmpName varchar(10) not null,
+  4      Gender varchar(1) not null CHECK (Gender='M' or Gender='F'),
+  5      Salary number(10) not null,
+  6      Address varchar(10) not null );
+
+Table created.
+
+ insert into Employee values(1,'emp1','F',10000,'Manipal');
+
+1 row created.
+
+ insert into Employee values(2,'emp2','F',10000,'Manipal');
+
+1 row created.
+
+ alter table employee add(DOB date);
+
+Table altered.
+
+ update employee set dob='12-jan-2003';
+
+2 rows updated.
+
+ update employee set dob='1-mar-2003'
+  2  where empno =2;
+
+1 row updated.
+
+
+ select to_char(dob, 'DD-MON-YYYY') from employee;
+
+TO_CHAR(DOB,'DD-MON-
+--------------------
+12-JAN-2003
+01-MAR-2003
+
+SQL> select to_char(dob, 'DD-MM-YY') from employee;
+
+TO_CHAR(
+--------
+12-01-03
+01-03-03
+
+SQL> select to_char(dob, 'YEAR') from employee;
+
+TO_CHAR(DOB,'YEAR')
+------------------------------------------
+TWO THOUSAND THREE
+TWO THOUSAND THREE
+
+SQL> select to_char(dob, 'Year') from employee;
+
+TO_CHAR(DOB,'YEAR')
+------------------------------------------
+Two Thousand Three
+Two Thousand Three
+
+SQL> select to_char(dob, 'year') from employee;
+
+TO_CHAR(DOB,'YEAR')
+------------------------------------------
+two thousand three
+two thousand three
+
+SQL> select to_char(dob, 'DAY') from employee;
+
+TO_CHAR(DOB,'DAY')
+------------------------------------
+SUNDAY
+SATURDAY
+
+SQL> select to_char(dob, 'Day') from employee;
+
+TO_CHAR(DOB,'DAY')
+------------------------------------
+Sunday
+Saturday
+
+
+
+
