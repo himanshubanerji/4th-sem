@@ -1,0 +1,321 @@
+
+SET SERVEROUTPUT ON
+
+DECLARE
+    message varchar2(20):='Hello, World!';
+BEGIN
+    dbms_output.put_line(message);
+END;
+/
+
+===========================================================================
+
+1)
+DECLARE
+    rollNum StudentTable.rollno%TYPE;
+    marks StudentTable.gpa%TYPE;
+BEGIN
+    rollNum := &roll_number;
+    SELECT gpa INTO marks FROM StudentTable WHERE rollno=rollNum;
+    dbms_output.put_line('Gpa is ' || to_char(marks));
+END;
+/
+
+
+Enter value for roll_number: 5
+old   5:     rollNum := &roll_number;
+new   5:     rollNum := 5;
+Gpa is 9.5
+------------------------------------------------
+
+2)
+DECLARE
+    rollNum StudentTable.rollNo%TYPE;
+    sgpa StudentTable.gpa%TYPE;
+BEGIN
+    rollNum := &roll_number;
+    select gpa into sgpa from StudentTable where rollNo=rollNum;
+IF sgpa between 0 and 4 THEN
+    dbms_output.put_line('F');
+ELSIF sgpa between 4 and 5 then
+    dbms_output.put_line('E');
+ELSIF sgpa between 5 and 6 then
+	dbms_output.put_line('D');
+ELSIF sgpa between 6 and 7 then
+	dbms_output.put_line('C');
+ELSIF sgpa between 7 and 8 then
+	dbms_output.put_line('B');
+ELSIF sgpa between 8 and 9 then
+	dbms_output.put_line('A');	
+ELSE 
+	dbms_output.put_line('A+');									
+END IF;
+END;
+/
+
+Enter value for roll_number: 4
+old   5:     rollNum := &roll_number;
+new   5:     rollNum := 4;
+B
+------------------------------------------------
+
+3)
+DECLARE
+    issue_date date;
+    return_date date;
+    difference number;
+    fine number;
+BEGIN
+    issue_date := TO_DATE('&issue_date','DD-MM-YYYY');
+    return_date := TO_DATE('&return_date','DD-MM-YYYY');
+    difference := TO_DATE(return_date, 'DD-MM-YYYY') - TO_DATE(issue_date, 'DD-MM-YYYY');
+IF difference between 0 and 7 THEN
+    fine:=0;
+ELSIF difference between 8 and 15 THEN
+    fine := (difference-7)*1;
+ELSIF difference between 16 and 30 THEN
+    fine := 8 + (difference-15)*2;
+ELSE
+    fine := 8 + 30 + (difference-30)*5;
+END IF;
+dbms_output.put_line('FINE = ' || fine);
+END;
+/
+
+Enter value for issue_date: 02-04-2023
+old   7:     issue_date := TO_DATE('&issue_date','DD-MM-YYYY');
+new   7:     issue_date := TO_DATE('02-04-2023','DD-MM-YYYY');
+Enter value for return_date: 06-04-2023
+old   8:     return_date := TO_DATE('&return_date','DD-MM-YYYY');
+new   8:     return_date := TO_DATE('06-04-2023','DD-MM-YYYY');
+FINE = 0
+
+------------------------------------------------
+
+4)
+DECLARE
+    roll_no StudentTable.rollNo%TYPE;
+    score StudentTable.gpa%TYPE;
+BEGIN
+    roll_no := 1;
+LOOP
+IF roll_no > 5 THEN
+    EXIT;
+END IF;
+select gpa into score from StudentTable where rollNo=roll_no;
+IF score between 0 and 4 THEN
+    dbms_output.put_line('Grade : F');
+ELSIF score between 4 and 5 THEN
+    dbms_output.put_line('Grade : E');
+ELSIF score between 5 and 6 THEN
+    dbms_output.put_line('Grade : D');
+ELSIF score between 6 and 7 THEN
+    dbms_output.put_line('Grade : C');
+ELSIF score between 7 and 8 THEN
+    dbms_output.put_line('Grade : B');
+ELSIF score between 8 and 9 THEN
+    dbms_output.put_line('Grade : A');
+ELSE
+    dbms_output.put_line('Grade : A+');
+END IF;
+roll_no := roll_no + 1;
+END LOOP;
+END;
+/
+
+Grade : D
+Grade : C
+Grade : F
+Grade : B
+Grade : A+
+-----------------------------------------------
+
+
+alter table studenttable add (grade varchar(3));
+
+-----------------------------------------------
+
+5)
+DECLARE
+    roll_no StudentTable.rollNo%TYPE;
+    score StudentTable.gpa%TYPE;
+BEGIN
+    roll_no := 1;
+while(roll_no<6)
+LOOP
+IF roll_no > 5 THEN
+    EXIT;
+END IF;
+select gpa into score from StudentTable where rollNo=roll_no;
+IF score between 0 and 4 THEN
+    update StudentTable set Grade='F' where rollNo=roll_no;
+ELSIF score between 4 and 5 THEN
+    update StudentTable set Grade='E' where rollNo=roll_no;
+ELSIF score between 5 and 6 THEN
+    update StudentTable set Grade='D' where rollNo=roll_no;
+ELSIF score between 6 and 7 THEN
+    update StudentTable set Grade='C' where rollNo=roll_no;
+ELSIF score between 7 and 8 THEN
+    update StudentTable set Grade='B' where rollNo=roll_no;
+ELSIF score between 8 and 9 THEN
+    update StudentTable set Grade='A' where rollNo=roll_no;
+ELSE
+    update StudentTable set LetterGrade='A+' where rollNo=roll_no;
+END IF;
+roll_no := roll_no + 1;
+END LOOP;
+END;
+/
+
+-----------------------------------------------------
+
+6)
+DECLARE
+    i number := 1;
+    roll_no StudentTable.rollNo%TYPE;
+    score StudentTable.gpa%TYPE;
+    highest StudentTable.gpa%TYPE;
+BEGIN
+    roll_no := 1;
+select gpa into highest from StudentTable where rollNo=roll_no;
+FOR i IN 1..5 LOOP
+select gpa into score from StudentTable where rollNo=roll_no;
+IF score>highest THEN
+    highest:=score;
+END IF;
+roll_no := roll_no + 1;
+END LOOP;
+dbms_output.put_line('Max grade : ' || highest);
+END;
+/
+
+Max grade : 9.5
+
+----------------------------------------------------------
+
+7)
+
+DECLARE
+    g char(2);
+    roll_no StudentTable.rollNo%TYPE;
+    score StudentTable.gpa%TYPE;
+BEGIN
+    roll_no := 1;
+<<loopbegin>>
+select gpa into score from StudentTable where rollNo=roll_no;
+IF score between 0 and 4 THEN
+    g := 'F';
+ELSIF score between 4 and 5 THEN
+    g := 'E';
+ELSIF score between 5 and 6 THEN
+    g := 'D';
+ELSIF score between 6 and 7 THEN
+    g := 'C';
+ELSIF score between 7 and 8 THEN
+    g := 'B';
+ELSIF score between 8 and 9 THEN
+    g := 'A';
+ELSE
+    g := 'A+';
+END IF;
+dbms_output.put_line('Roll no : '||roll_no||' Grade : '||g);
+roll_no := roll_no + 1;
+IF roll_no<6 THEN
+    GOTO loopbegin;
+END IF;
+END;
+/
+
+
+Roll no : 1 Grade : D
+Roll no : 2 Grade : C
+Roll no : 3 Grade : F
+Roll no : 4 Grade : B
+Roll no : 5 Grade : A+
+--------------------------------------------------------------
+
+9)
+DECLARE
+    Out_of_range Exception;
+    roll_no StudentTable.rollNo%TYPE;
+    score StudentTable.gpa%TYPE;
+BEGIN
+roll_no := 1;
+while(roll_no<6)
+LOOP
+IF roll_no > 5 THEN
+    EXIT;
+END IF;
+select gpa into score from StudentTable where rollNo=roll_no;
+IF score between 0 and 4 THEN
+    update StudentTable set Grade='F' where rollNo=roll_no;
+ELSIF score between 4 and 5 THEN
+    update StudentTable set Grade='E' where rollNo=roll_no;
+ELSIF score between 5 and 6 THEN
+    update StudentTable set Grade='D' where rollNo=roll_no;
+ELSIF score between 6 and 7 THEN
+    update StudentTable set Grade='C' where rollNo=roll_no;
+ELSIF score between 7 and 8 THEN
+    update StudentTable set Grade='B' where rollNo=roll_no;
+ELSIF score between 8 and 9 THEN
+    update StudentTable set Grade='A' where rollNo=roll_no;
+ELSIF score between 9 and 10 THEN
+    update StudentTable set Grade='A+' where rollNo=roll_no;
+ELSE
+    RAISE Out_of_range;
+END IF;
+roll_no := roll_no + 1;
+END LOOP;
+EXCEPTION
+WHEN Out_of_range THEN
+    dbms_output.put_line('GPA is out of range!');
+END;
+/
+
+PL/SQL procedure successfully completed.
+
+------------------
+
+DECLARE
+    roll_number studenttable.rollno%TYPE;
+    score studenttable.gpa%TYPE;
+    n number(10);
+    i number(10);
+BEGIN
+    roll_number:=1;
+    i:=0;
+    select count(rollno) into n  from studenttable;
+    while i<n
+    LOOP        
+    select gpa into score from studenttable where rollno = roll_number;
+    IF score between 0 and 4  then
+        update studenttable
+            set grade = 'F' where rollno = roll_number;
+    ELSIF score between 4 and 5 then
+        update studenttable
+            set grade = 'E' where rollno = roll_number;
+    ELSIF score between 5 and 6 then
+        update studenttable
+            set grade = 'D' where rollno = roll_number;
+    ELSIF score between 6 and 7 then
+        update studenttable
+            set grade = 'C' where rollno = roll_number;
+    ELSIF score between 7 and 8 then
+        update studenttable
+            set grade = 'B' where rollno = roll_number;
+    ELSIF score between 8 and 9 then
+        update studenttable
+            set grade = 'A' where rollno = roll_number;    
+    ELSE 
+        update studenttable
+            set grade = 'A+' where rollno = roll_number;                                
+    END IF;
+    i:=i+1;
+    roll_number:=roll_number+1;
+    END LOOP;
+END;
+/
+
+PL/SQL procedure successfully completed.
+
+=========================================================
