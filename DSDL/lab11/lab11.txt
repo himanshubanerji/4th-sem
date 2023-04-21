@@ -1,0 +1,197 @@
+ create table emp_delete
+  2  (
+  3     emp_id number(10),
+  4     emp_name varchar(10),
+  5     emp_sal number(10) );
+
+Table created.
+
+SQL> create table employee (
+  2     emp_id number(10),
+  3     emp_name varchar(10),
+  4     emp_sal number(10) );
+
+Table created.
+
+SQL> create or replace trigger emp_trigger
+  2  before delete on employee
+  3  for each row
+  4  begin
+  5  insert into emp_delete values( :OLD.emp_id,
+  6                                 :OLD.emp_name,
+  7                                 :OLD.emp_sal );
+  8  end;
+  9  /
+
+Trigger created.
+
+SQL> show errors
+No errors.
+SQL> desc employee
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ EMP_ID                                             NUMBER(10)
+ EMP_NAME                                           VARCHAR2(10)
+ EMP_SAL                                            NUMBER(10)
+
+SQL> insert into employee values(1, 'Himanshu', 4000000);
+
+1 row created.
+
+SQL> insert into employee values(2, 'Json', 600000);
+
+1 row created.
+
+SQL> insert into employee values(3, 'Kofi', 300000);
+
+1 row created.
+
+SQL> delete from employee where emp_id = 3;
+
+1 row deleted.
+
+SQL> select * from emp_delete
+  2  ;
+
+    EMP_ID EMP_NAME      EMP_SAL
+---------- ---------- ----------
+         3 Kofi           300000
+
+SQL> DELETE FROM employee WHERE emp_name = 'Json';
+
+1 row deleted.
+
+SQL> select * from emp_delete
+  2  ;
+
+    EMP_ID EMP_NAME      EMP_SAL
+---------- ---------- ----------
+         3 Kofi           300000
+         2 Json           600000
+
+
+
+1.)
+
+create table  log_change_Takes(
+    Time_Of_Change date,
+     ID varchar (5), 
+    courseid varchar (8),
+    sec_id varchar (8), 
+    semester varchar (6), 
+    year number (4), 
+    grade varchar(2)
+);
+
+
+CREATE OR REPLACE trigger takes_log
+BEFORE INSERT OR UPDATE OF id, course_id, semester, year, grade
+OR DELETE ON takes
+FOR EACH ROW
+BEGIN
+CASE
+WHEN DELETING OR UPDATING THEN 
+insert into log_change_Takes values(Sysdate, :OLD.ID,
+:OLD.COURSE_ID,
+:OLD.SEC_ID,
+:OLD.SEMESTER,
+:OLD.YEAR,
+:OLD.GRADE);
+WHEN INSERTING THEN
+insert into log_change_Takes values(Sysdate, :NEW.ID,
+:NEW.COURSE_ID,
+:NEW.SEC_ID,
+:NEW.SEMESTER,
+:NEW.YEAR,
+:NEW.GRADE);
+END CASE;
+END;
+/
+
+ 
+insert into takes values ('00128', 'CS-101', '1', 'Spring', 2010, 'A');
+
+1 row created.
+
+SQL> select * from log_change_takes;
+
+TIME_OF_C ID    COURSEID SEC_ID   SEMEST       YEAR GR
+--------- ----- -------- -------- ------ ---------- --
+21-APR-23 00128 CS-101   1        Spring       2010 A
+ 
+
+
+2.)
+
+
+create table old_data_instructor(
+    ID varchar (5),
+name varchar(20),
+dept_name varchar(20),
+salary number (8, 2));
+
+ 
+
+ 
+
+CREATE OR REPLACE trigger salary_log
+BEFORE UPDATE OF salary ON instructor
+FOR EACH ROW
+BEGIN
+insert into old_data_instructor values(
+:OLD.ID,
+:OLD.NAME,
+:OLD.DEPT_NAME,
+:OLD.SALARY    
+);
+END;
+/
+
+ update instructor
+  2  set salary = 40000
+  3  where id = 10101;
+
+ select * from  old_data_instructor;
+
+ID    NAME                 DEPT_NAME                SALARY
+----- -------------------- -------------------- ----------
+10101 Himanshu             Comp. Sci.                65000
+
+
+
+
+4)
+
+CREATE table client(
+    c_no varchar(5) primary key,
+    name varchar(20),
+    address varchar(100),
+    bal_due number);
+
+insert into client values ('01', 'Himanshu','Lucknow',10000);
+insert into client values ('02', 'Json','Delhi',20000);
+insert into client values ('03', 'Shreya','Jaipur',30000);
+
+create table audit_client(
+    c_no varchar(5),
+    name varchar(20),
+    bal_due number,
+    op varchar(3),
+    user_id varchar(5) default('00000'),
+    opDate date);
+
+
+
+create or replace trigger client_audit
+BEFORE UPDATE or INSERT on client
+FOR EACH ROW
+begin
+    case
+        WHEN UPDATING THEN
+            insert into audit_client values (:OLD.c_no,:OLD.name,:OLD.bal_due,'upd',NULL,sysdate);
+        WHEN DELETING THEN
+            insert into audit_client values (:OLD.c_no,:OLD.name,:OLD.bal_due,'del',NULL,sysdate);
+    end case;
+end;
+/
+
